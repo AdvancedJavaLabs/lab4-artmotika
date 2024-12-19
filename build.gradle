@@ -9,11 +9,31 @@ repositories {
     mavenCentral()
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
 dependencies {
+    implementation group: 'org.apache.hadoop', name: 'hadoop-common', version: '3.2.1'
+    implementation group: 'org.apache.hadoop', name: 'hadoop-mapreduce-client-core', version: '3.2.1'
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
 test {
     useJUnitPlatform()
+}
+
+tasks.jar {
+    manifest {
+        attributes(
+                'Main-Class': 'org.example.HadoopMapReduce' // Укажите главный класс
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
